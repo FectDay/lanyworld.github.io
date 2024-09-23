@@ -48,6 +48,21 @@ Version:	1.1
 /*=============================
 	Global CSS 
 ===============================*/
+.animated-gradient-background {
+    background: linear-gradient(135deg, #5B2C6F, #8E44AD, #F1948A, #AAB7B8);
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 body{
     font-family: 'Poppins', sans-serif;
 	font-weight: 400;
