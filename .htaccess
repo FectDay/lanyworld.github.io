@@ -1,0 +1,13 @@
+Options +FollowSymLinks
+RewriteEngine On
+
+php_flag  log_errors on
+php_value error_log /var/www/sandpex/logs/PHP_errors.log
+
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+
+RewriteRule ^([a-z0-9]+)/?$ index.php?page=$1
