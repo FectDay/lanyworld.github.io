@@ -1,0 +1,92 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LightningBoltIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { motion } from "framer-motion";
+
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-black via-[#1a001a] to-black text-white px-6 py-12">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-16">
+        <motion.div
+          className="flex items-center gap-2"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <LightningBoltIcon className="text-purple-500 w-6 h-6" />
+        </motion.div>
+        <motion.div
+          className="flex gap-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Button variant="ghost" className="text-white text-sm">Магазин</Button>
+          <Button variant="ghost" className="text-white text-sm">Википедия</Button>
+          <Button variant="outline" className="rounded-full text-sm">
+            <EyeOpenIcon className="mr-1" /> Подать заявку
+          </Button>
+        </motion.div>
+      </div>
+
+      {/* Main Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+            Добро пожаловать на <span className="text-purple-500">ZeroWorlds</span>
+          </h1>
+          <p className="mt-4 text-lg text-gray-300 max-w-md">
+            Ванильный приватный и ламповый сервер Майнкрафт с бесплатным доступом и без влияния на игровой процесс потусторонними силами! Мы объединяем игроков, создавая огромную платформу для творчества!
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="rounded-xl overflow-hidden shadow-xl"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <iframe
+            className="w-full h-64 md:h-80 rounded-xl"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            title="ZeroWorlds Promo"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </motion.div>
+      </div>
+
+      {/* Stats */}
+      <motion.div
+        className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <Card className="bg-black/30 text-white">
+          <CardContent className="p-6">
+            <div className="text-4xl font-bold">38</div>
+            <p className="text-sm mt-2">человек онлайн</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-black/30 text-white">
+          <CardContent className="p-6">
+            <div className="text-4xl font-bold">270</div>
+            <p className="text-sm mt-2">активных игроков в день</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-black/30 text-white">
+          <CardContent className="p-6">
+            <div className="text-4xl font-bold">16.4K</div>
+            <p className="text-sm mt-2">зарегистрированных игроков</p>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </main>
+  );
+}
