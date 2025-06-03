@@ -4,23 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>LanyWorld</title>
-  <link rel="stylesheet" href="assets/style.css"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div class="gradient-bg"></div>
-  
-  <div class="content">
-    <div class="text">
+
+  <header class="top-bar">
+    <div class="logo">⚡</div>
+    <nav>
+      <a href="#">Магазин</a>
+      <a href="#">Вики</a>
+      <button>Подать заявку</button>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="hero-text">
       <h1>Добро пожаловать на <span class="highlight">LanyWorld</span>!</h1>
-      <p>Тёплый и приватный Minecraft-сервер, где играют без постороннего вмешательства и абсолютно бесплатно!<br/>Здесь собираются творческие люди, чтобы вместе строить удивительный мир.</p>
+      <p>
+        Тёплый и приватный Minecraft-сервер с бесплатным доступом и без постороннего вмешательства!
+        Здесь собираются творческие люди, чтобы вместе строить удивительный мир.
+      </p>
     </div>
 
-    <div class="video-wrapper">
-      <div class="video-overlay">
-        <div class="play-icon">&#9658;</div>
-      </div>
-      <video class="preview-video" src="https://www.youtube.com/watch?v=Zflyw7ygSqM" muted></video>
+    <div class="video-box">
+      <iframe 
+        src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+        title="Видео о LanyWorld" 
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
     </div>
-  </div>
+  </main>
+
+  <section class="stats">
+    <div class="stat">
+      <h2>56</h2>
+      <p>человек онлайн</p>
+    </div>
+    <div class="stat">
+      <h2>270+</h2>
+      <p>активных игроков в день</p>
+    </div>
+    <div class="stat">
+      <h2>16.4K+</h2>
+      <p>зарегистрированных игроков</p>
+    </div>
+  </section>
 </body>
 </html>
