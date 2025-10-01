@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Server Status</title>
+<style>
+
+  body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#071027 0%,var(--bg) 100%);color:#e6eef6}
+  .wrap{max-width:880px;margin:48px auto;padding:20px}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  h1{font-size:20px;margin:0}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:12px 10px;text-align:left;font-size:14px;color:var(--muted)}
+  th{font-size:13px;color:#cfd8e7;font-weight:600}
+  tr + tr td{border-top:1px solid rgba(255,255,255,0.03)}
+  .name{color:#e6eef6;font-weight:600}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+  .online{background:rgba(46,204,113,0.12);color:var(--green);}
+  .offline{background:rgba(231,76,60,0.08);color:var(--red);}
+  .muted{color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:8px;align-items:center}
+  button{background:var(--accent);border:none;color:white;padding:8px 12px;border-radius:8px;cursor:pointer}
+  button:disabled{opacity:0.6;cursor:default}
+  .small{font-size:13px;color:var(--muted)}
+  .ping{font-weight:700;color:#cfd8e7}
+  .carousel monitoringindex {
+    display: flex;       /* Используем флексбокс */
+    justify-content: flex-start; /* Выравниваем содержимое по левому краю */
+    align-items: stretch; /* Растягиваем элементы вертикально по высоте контейнера */
+    margin-left: 0;      /* Дополнительный отступ слева при необходимости */
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>Minecraft Server Status</h1>
+        <div class="small">Live status for proxy & sub-servers</div>
+      </div>
+      <div class="controls">
+        <div class="small" id="last-checked">Last: —</div>
+        <button id="refresh">Refresh</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <table id="status-table" aria-live="polite">
+        <thead>
+          <tr><th>Server</th><th>Address</th><th style="width:140px">Status</th></tr>
+        </thead>
+        <tbody>
+          <!-- rows injected here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+const api = 'api.php';
+const intervalMs = 5000;
+const tableBody = document.querySelector('#status-table tbody');
+const lastChecked = document.getElementById('last-checked');
+const refreshBtn = document.getElementById('refresh');
+let timer = null;
+
+function renderRows(data){
+  tableBody.innerHTML = '';
+  data.forEach(s => {
+    const tr = document.createElement('tr');
+
+    const tdName = document.createElement('td');
+    tdName.innerHTML = '<div class="name">'+escapeHtml(s.name)+'</div><div class="muted">'+escapeHtml(s.name.toLowerCase())+'</div>';
+    tr.appendChild(tdName);
+
+    const tdAddr = document.createElement('td');
+    tdAddr.innerHTML = '<div class="muted">'+escapeHtml(s.host)+':'+escapeHtml(String(s.port))+'</div>';
+    tr.appendChild(tdAddr);
+
+    const tdStatus = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + (s.status === 'online' ? 'online' : 'offline');
+    const pingText = s.ping_ms !== null ? (' • ' + s.ping_ms + 'ms') : '';
+    badge.innerHTML = (s.status === 'online' ? '● Online' : '○ Offline') + '<span class="muted" style="margin-left:8px;font-weight:600">'+pingText+'</span>';
+    tdStatus.appendChild(badge);
+    tr.appendChild(tdStatus);
+
+    tableBody.appendChild(tr);
+  });
+}
+
+function fetchStatus(){
+  refreshBtn.disabled = true;
+  const url = api + '?_=' + Date.now();
+  fetch(url).then(r=>{
+    if(!r.ok) throw new Error('Network');
+    return r.json();
+  }).then(data=>{
+    renderRows(data);
+    const now = new Date();
+    lastChecked.textContent = 'Last: ' + now.toLocaleTimeString();
+  }).catch(e=>{
+    tableBody.innerHTML = '<tr><td colspan="3" class="muted">Error fetching status</td></tr>';
+    lastChecked.textContent = 'Last: —';
+  }).finally(()=>refreshBtn.disabled = false);
+}
+
+refreshBtn.addEventListener('click', ()=>{
+  fetchStatus();
+  // reset timer so next auto-refresh happens after interval
+  if(timer) { clearInterval(timer); timer = setInterval(fetchStatus, intervalMs); }
+});
+
+fetchStatus();
+timer = setInterval(fetchStatus, intervalMs);
+
+// small helper
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Server Status</title>
+
+<!-- Use a modern web font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-1: #071025;
+    --bg-2: #081b2b;
+    --card: rgba(255,255,255,0.03);
+    --muted:#9aa4b2;
+    --accent-a: #7c3aed;
+    --accent-b: #06b6d4;
+    --green:#28d39a;
+    --red:#ff6b6b;
+    --glass: rgba(255,255,255,0.04);
+    --glass-2: rgba(255,255,255,0.02);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    background: radial-gradient(1000px 400px at 10% 10%, rgba(124,58,237,0.10), transparent 10%),
+                linear-gradient(180deg,var(--bg-1),var(--bg-2));
+    color:#eaf2ff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  .wrap{max-width:980px;margin:40px auto;padding:28px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+  .brand{
+    display:flex;align-items:center;gap:14px;
+  }
+  .logo{
+    width:44px;height:44px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent-a),var(--accent-b));
+    display:flex;align-items:center;justify-content:center;font-weight:700;color:white;
+    box-shadow:0 6px 22px rgba(2,6,23,0.6);
+  }
+  h1{font-size:18px;margin:0;font-weight:700}
+  .subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+
+  .controls{display:flex;gap:10px;align-items:center}
+  .small{font-size:13px;color:var(--muted)}
+  button{
+    background:linear-gradient(90deg,var(--accent-a),var(--accent-b));
+    border:0;color:white;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;
+    box-shadow:0 6px 18px rgba(9,10,22,0.4);
+  }
+  button:disabled{opacity:0.6;cursor:default}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:18px}
+  .card{
+    background: linear-gradient(180deg,var(--card),var(--glass-2));
+    border:1px solid rgba(255,255,255,0.04);
+    padding:14px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,0.5);
+  }
+
+  table{width:100%;border-collapse:collapse}
+  thead th{font-size:13px;color:#cfe6ff;text-align:left;padding:12px 10px;font-weight:700}
+  tbody td{padding:14px 10px;font-size:14px;color:var(--muted);vertical-align:middle}
+  tr + tr td{border-top:1px solid rgba(255,255,255,0.03)}
+
+  .name{color:#eaf2ff;font-weight:700}
+  .muted{color:var(--muted);font-size:13px}
+  .addr{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace; font-size:13px;color:var(--muted)}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;font-weight:700;font-size:13px;
+    box-shadow: inset 0 -6px 18px rgba(0,0,0,0.25);
+  }
+  .dot{
+    width:10px;height:10px;border-radius:50%;
+    box-shadow:0 6px 12px rgba(0,0,0,0.25);
+  }
+  .online{background:linear-gradient(90deg,rgba(40,211,154,0.12),rgba(40,211,154,0.06));color:var(--green)}
+  .offline{background:linear-gradient(90deg,rgba(255,107,107,0.06),transparent);color:var(--red)}
+  .online .dot{background:linear-gradient(180deg,var(--green),#1bbd82); box-shadow:0 6px 18px rgba(40,211,154,0.18); animation: pulse 2s infinite;}
+  .offline .dot{background:linear-gradient(180deg,var(--red),#ef5252); opacity:0.95;}
+
+  @keyframes pulse{
+    0%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(40,211,154,0.3))}
+    60%{transform:scale(1.08);filter:drop-shadow(0 10px 30px rgba(40,211,154,0.08))}
+    100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(40,211,154,0))}
+  }
+
+  tr:hover td{background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent);}
+
+  .ping{font-weight:700;color:#cfe6ff;margin-left:6px;font-size:13px}
+  .type{font-size:13px;color:var(--muted);margin-top:6px}
+
+  .debug{margin-top:12px;font-size:13px;color:var(--muted);white-space:pre-wrap;max-height:160px;overflow:auto;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
+
+  /* Responsive */
+  @media (min-width:720px){
+    .grid{grid-template-columns:1fr}
+    .addr{font-size:13px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">Ll</div>
+        <div>
+          <h1>Minecraft Server Status</h1>
+          <div class="subtitle">Live status for proxy & sub-servers</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="small" id="last-checked">Last: —</div>
+        <button id="refresh">Refresh</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <table id="status-table" aria-live="polite">
+          <thead>
+            <tr><th>Server</th><th>Address</th><th style="width:180px">Status</th></tr>
+          </thead>
+          <tbody>
+            <!-- rows injected here -->
+          </tbody>
+        </table>
+
+        <div id="debug" class="debug" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const servers = [
+  { name: 'PROXY-01', host: 'join.queazified.co.uk', port: 25565, showAddress: true, type: 'Proxy' },
+  { name: 'HUB-01',    host: 'bd.queazified.co.uk',           port: 25566, showAddress: false, type: 'Purpur' },
+  { name: 'HUB-02',   host: 'bd.queazified.co.uk',           port: 25567, showAddress: false, type: 'Purpur' },
+  { name: 'LIMBO-01',host: 'bd.queazified.co.uk',           port: 25996, showAddress: false, type: 'QLimbo' },
+  { name: 'GENESIS',   host: 'bd.queazified.co.uk',           port: 25652, showAddress: false, type: 'Purpur-1.21.8' },
+];
+const intervalMs = 5000;
+const tableBody = document.querySelector('#status-table tbody');
+const lastChecked = document.getElementById('last-checked');
+const refreshBtn = document.getElementById('refresh');
+const debugEl = document.getElementById('debug');
+let timer = null;
+
+function renderRows(data){
+  tableBody.innerHTML = '';
+  data.forEach(s => {
+    const tr = document.createElement('tr');
+
+    const tdName = document.createElement('td');
+    tdName.innerHTML = '<div class="name">'+escapeHtml(s.name)+'</div>'
+                     + '<div class="type">'+escapeHtml(s.type || '')+'</div>';
+    tr.appendChild(tdName);
+
+    const tdAddr = document.createElement('td');
+    tdAddr.innerHTML = s.showAddress
+      ? '<div class="addr">'+escapeHtml(s.host)+':'+escapeHtml(String(s.port))+'</div>'
+      : '<div class="muted">Hidden</div>';
+    tr.appendChild(tdAddr);
+
+    const tdStatus = document.createElement('td');
+    const badge = document.createElement('div');
+    badge.className = 'badge ' + (s.status === 'online' ? 'online' : 'offline');
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    badge.appendChild(dot);
+
+    const label = document.createElement('span');
+    label.textContent = s.status === 'online' ? 'Online' : 'Offline';
+    badge.appendChild(label);
+
+    if (s.ping_ms !== undefined && s.ping_ms !== null) {
+      const ping = document.createElement('span');
+      ping.className = 'ping';
+      ping.textContent = s.ping_ms + ' ms';
+      badge.appendChild(ping);
+    }
+
+    tdStatus.appendChild(badge);
+    tr.appendChild(tdStatus);
+
+    tableBody.appendChild(tr);
+  });
+}
+
+async function fetchStatus(){
+  refreshBtn.disabled = true;
+  debugEl.style.display = 'none';
+  const results = [];
+  for (const s of servers) {
+    // Use mcstatus.io public API (works on GitHub Pages)
+    let apiUrl = `https://api.mcstatus.io/v2/status/java/${encodeURIComponent(s.host)}:${s.port}`;
+    try {
+      const resp = await fetch(apiUrl);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      results.push({
+        ...s,
+        status: data.online ? 'online' : 'offline',
+        ping_ms: data.online ? Math.round(data.latency) : null,
+      });
+    } catch (err) {
+      results.push({
+        ...s,
+        status: 'offline',
+        ping_ms: null,
+      });
+      debugEl.style.display = 'block';
+      debugEl.textContent = `Error fetching ${apiUrl}:\n${err}`;
+    }
+  }
+  renderRows(results);
+  const now = new Date();
+  lastChecked.textContent = 'Last: ' + now.toLocaleTimeString();
+  refreshBtn.disabled = false;
+}
+
+refreshBtn.addEventListener('click', ()=>{
+  fetchStatus();
+  if(timer) { clearInterval(timer); timer = setInterval(fetchStatus, intervalMs); }
+});
+
+fetchStatus();
+timer = setInterval(fetchStatus, intervalMs);
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>

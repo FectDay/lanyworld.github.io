@@ -1,0 +1,16 @@
+:root {
+    --primary-color: #375a7f;
+    --secondary-color: #444444;
+    --background-color: #222222;
+    --text-color: #ffffff;
+    --card-bg: #474747;
+    --navbar-bg: #505050;
+    --navbar-color: #ffffff;
+
+    --footer-bg: #1a1a1a;
+    --footer-text: #ffffff;
+    --footer-link: #375a7f;
+    --footer-link-hover: #4a76a8;
+    --footer-border: #2c2c2c;
+    --footer-muted: #888888;
+}
